@@ -1,0 +1,31 @@
+Input file:
+C:\Users\whyisyoung\Desktop\fac.txt
+
+
+ 1   jmp   0     2
+ 2   ini   0     6
+ 3   opr   0    16
+ 4   sto   0     3
+ 5   lit   0     1
+ 6   sto   0     5
+ 7   lit   0     2
+ 8   sto   0     4
+ 9   lod   0     4
+10   lod   0     3
+11   opr   0    13
+12   jpc   0    22
+13   lod   0     5
+14   lod   0     4
+15   opr   0     4
+16   sto   0     5
+17   lit   0     1
+18   lod   0     4
+19   opr   0     2
+20   sto   0     4
+21   jmp   0     9
+22   lod   0     5
+23   opr   0    14
+24   opr   0     0
+25   ini   0     3
+26   cal   0     2
+27   opr   0     0

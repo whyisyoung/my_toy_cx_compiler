@@ -1,0 +1,64 @@
+{
+    function lcm
+    {
+        int x;
+        int y;
+        int mul;
+        int r;
+        int ans;
+
+        read x;
+        read y;
+
+        mul = x * y;
+        while(y != 0) {
+            r = x % y;
+            x = y;
+            y = r;
+        };
+
+        ans = mul / x;
+        write ans;
+
+    }
+
+    call lcm;
+}
+
+
+// Version 2, call by value
+// {
+//     function gcd(int x, int y)
+//     {
+//         int x;
+//         int y;
+//         while(y != 0) {
+//             r = x % y;
+//             x = y;
+//             y = r;
+//         }
+
+//         return x;
+//     }
+
+//     function lcm
+//     {
+//         int x;
+//         int y;
+//         int r;
+
+//         read x;
+//         read y;
+
+//         r = gcd(x, y);
+
+//         ans = x * y / r;
+//         write ans;
+
+//     }
+
+//     function main
+//     {
+//         call lcm;
+//     }
+// }

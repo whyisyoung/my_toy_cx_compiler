@@ -1,0 +1,37 @@
+Input file:
+C:\Users\whyisyoung\Desktop\lcm.txt
+
+
+ 1   jmp   0     2
+ 2   ini   0     8
+ 3   opr   0    16
+ 4   sto   0     3
+ 5   opr   0    16
+ 6   sto   0     4
+ 7   lod   0     3
+ 8   lod   0     4
+ 9   opr   0     4
+10   sto   0     5
+11   lod   0     4
+12   lit   0     0
+13   opr   0     9
+14   jpc   0    24
+15   lod   0     3
+16   lod   0     4
+17   opr   0     6
+18   sto   0     6
+19   lod   0     4
+20   sto   0     3
+21   lod   0     6
+22   sto   0     4
+23   jmp   0    11
+24   lod   0     5
+25   lod   0     3
+26   opr   0     5
+27   sto   0     7
+28   lod   0     7
+29   opr   0    14
+30   opr   0     0
+31   ini   0     3
+32   cal   0     2
+33   opr   0     0
