@@ -56,9 +56,14 @@ void error(int error_no)
         fprintf(error_file, "the name of identfier have been declared before. \n");
         break;
     case 6:
+        printf("Only variable can add or minus self.\n");
+        fprintf(error_file, "Only variable can add or minus self.\n");
+        break;
+    case 7:
         printf("\n");
         fprintf(error_file, "\n");
         break;
+
     case 31:
         printf("number exceeds 10000000.\n");
         fprintf(error_file, "number exceeds 10000000.\n");

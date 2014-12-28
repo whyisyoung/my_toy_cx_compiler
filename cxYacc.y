@@ -1,6 +1,6 @@
 %{
     #include "gencode.h"
-    #define YYDEBUG 0
+    #define YYDEBUG 1
     #ifdef YYDEBUG
         #define TRACE printf("reduce at line %d\n", __LINE__);
     #else
@@ -23,7 +23,7 @@
 %token SYM_write //, SYM_ident, SYM_number
 %token SYM_if
 %token SYM_else
-// %token SYM_for
+%token SYM_for
 %token SYM_true
 %token SYM_false
 
@@ -100,11 +100,15 @@ declaration:
         strcpy(ident, $2);
         enter_object_to_table(variable);
     }  SYM_semicolon
+
+
     | SYM_bool another_ident
     {
         strcpy(ident, $2);
         enter_object_to_table(variable); // 暂时将 bool 型变量当作 variable 处理
     } SYM_semicolon
+
+
     | SYM_const SYM_int some_ident
     { strcpy(ident, $3); }
     SYM_becomes SYM_number
@@ -112,6 +116,8 @@ declaration:
         number = $6;
         enter_object_to_table(constant);
     } SYM_semicolon
+
+
     | SYM_function some_ident // SYM_semicolon
     {
         strcpy(ident, $2);
@@ -138,29 +144,9 @@ statement_list:
     ;
 
 statement:
-    some_ident
-    {
-        int pos;
-        strcpy(ident, $1);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            if(table[pos].kind != variable){
-                error(12);
-                pos = 0;
-            }
-        }
-        $<number>$ = pos;
-    }
-    SYM_becomes expression
-    {
-        int pos;
-        if($<number>2 != 0) { // 其实就是 SYM_ident 后面那个大括号保留下来的 i， 因为此处无法访问上一个段落的 i, 所以要在上一段中用 $<number>$2 保存下来， $<number>$ 是指定 i 的类型为 数字
-            pos = $<number>2;
-            gen_middle_code(sto, level-table[pos].level, table[pos].adr);
-        }
-    } SYM_semicolon
+    assignment_statement SYM_semicolon
+
+
     | SYM_if SYM_lparen another_expression SYM_rparen
     {
         $<number>$ = code_index;
@@ -176,6 +162,8 @@ statement:
     {
         code[$<number>7].adr = code_index; // L2
     } SYM_semicolon
+
+
     | SYM_while
     {
         $<number>$ = code_index;
@@ -185,14 +173,41 @@ statement:
         $<number>$ = code_index;
         gen_middle_code(jpc, 0, 0); // 用 statement 之后的地址回填
     }
-    statement {
+    statement
+    {
         gen_middle_code(jmp, 0, $<number>2); // 无条件跳转回 while 循环
         code[$<number>6].adr = code_index;
     } SYM_semicolon
+
+
+    | SYM_for SYM_lparen init_expresstion  SYM_semicolon
+    {
+        $<number>$ = code_index; // L1, $<number>5
+    }
+    another_expression SYM_semicolon
+    {
+        $<number>$ = code_index;   // $<number>8
+        gen_middle_code(jpc, 0, 0); // 用 statement 之后的地址回填
+        gen_middle_code(jmp, 0, 0); // 条件成立先执行 statement(L4), 再执行 i++
+    }
+    additive_expresstion
+    {
+        gen_middle_code(jmp, 0, $<number>5); // jmp 0 L1
+        code[$<number>8 + 1].adr = code_index; // jmp 0 L4 回填
+    } SYM_rparen
+    statement
+    {
+        gen_middle_code(jmp, 0, $<number>8 + 2); // jmp 0 L2 , 先跳转回去执行 i++， 也就是 L2
+        code[$<number>8].adr = code_index; // jpc 0 L3 回填
+    } SYM_semicolon
+
+
     | SYM_write some_expression SYM_semicolon
     {
         gen_middle_code(opr, 0, 14); // Warning: 此处的 write 是为了输出变量，实际上也就是输出栈顶内容
     }
+
+
     | SYM_read some_ident SYM_semicolon
     {
         int pos;
@@ -205,71 +220,11 @@ statement:
             gen_middle_code(sto, level - table[pos].level, table[pos].adr);
         }
     }
-    | some_ident SYM_addself SYM_semicolon
-    {
-        int pos;
-        strcpy(ident, $1);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0); // Warning: 应该还要列出其他错误，必须是 variable 才能自增自减
-        else {
-            gen_middle_code(lit, 0, 1);
-            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
-            gen_middle_code(opr, 0, 2);
-            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
-        }
-    }
-    | SYM_addself some_ident SYM_semicolon
-    {
-        int pos;
-        strcpy(ident, $2);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            gen_middle_code(lit, 0, 1);
-            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
-            gen_middle_code(opr, 0, 2);
-            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
-        }
-    }
-    | some_ident SYM_minusself SYM_semicolon
-    {
-        int pos;
-        strcpy(ident, $1);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            gen_middle_code(lit, 0, -1);
-            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
-            gen_middle_code(opr, 0, 2);
-            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
-        }
-    }
-    | SYM_minusself some_ident SYM_semicolon
-    {
-        int pos;
-        strcpy(ident, $2);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            gen_middle_code(lit, 0, -1);
-            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
-            gen_middle_code(opr, 0, 2);
-            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
-        }
-    }
 
 
-    // TODO
+    | additive_statement SYM_semicolon
 
 
-    // | SYM_for SYM_lparen init_expr SYM_semicolon another_expression SYM_semicolon additive_expr SYM_rparen statement SYM_semicolon
-    // {
-
-    // }
     | SYM_call some_ident SYM_semicolon
     {
         int pos;
@@ -282,6 +237,8 @@ statement:
         else
             gen_middle_code(cal, level - table[pos].level, table[pos].adr);
     }
+
+
     //| block
     | SYM_lbrace statement_list SYM_rbrace
     ;
@@ -339,6 +296,8 @@ some_factor:
             }
         }
     }
+
+
     | SYM_number
     {
         int num = $1;
@@ -348,22 +307,20 @@ some_factor:
         }
         gen_middle_code(lit, 0, num);
     }
+
+
     | SYM_lparen some_expression SYM_rparen
     ;
 
 another_expression:
     another_expression SYM_or another_term
-    {
-        gen_middle_code(opr, 0, 17);
-    }
+        { gen_middle_code(opr, 0, 17); }
     | another_term
     ;
 
 another_term:
     another_term SYM_and another_factor
-    {
-        gen_middle_code(opr, 0, 18);
-    }
+        { gen_middle_code(opr, 0, 18);  }
     | another_factor
     ;
 
@@ -388,51 +345,34 @@ another_factor:
             }
         }
     }
+
     | SYM_true
-    {
-        gen_middle_code(lit, 0, 1);
-    }
+        { gen_middle_code(lit, 0, 1); }
+
     | SYM_false
-    {
-        gen_middle_code(lit, 0, 0);
-    }
+        { gen_middle_code(lit, 0, 0); }
     | SYM_not another_factor
-    {
-        gen_middle_code(opr, 0, 19);
-    }
+        { gen_middle_code(opr, 0, 19); }
     | SYM_lparen another_expression SYM_rparen
+
     | condition
     ;
 
 condition:
     left_condition SYM_lss some_expression
-    {
-        gen_middle_code(opr, 0, 10);
-    }
+        { gen_middle_code(opr, 0, 10); }
     | left_condition SYM_leq some_expression
-    {
-        gen_middle_code(opr, 0, 13);
-    }
+        { gen_middle_code(opr, 0, 13); }
     | left_condition SYM_gtr some_expression
-    {
-        gen_middle_code(opr, 0, 12);
-    }
+        { gen_middle_code(opr, 0, 12); }
     | left_condition SYM_geq some_expression
-    {
-        gen_middle_code(opr, 0, 11);
-    }
+        { gen_middle_code(opr, 0, 11); }
     | left_condition SYM_eql some_expression
-    {
-        gen_middle_code(opr, 0, 8);
-    }
+        { gen_middle_code(opr, 0, 8); }
     | left_condition SYM_neq some_expression
-    {
-        gen_middle_code(opr, 0, 9);
-    }
+        { gen_middle_code(opr, 0, 9); }
     | SYM_odd some_expression
-    {
-        gen_middle_code(opr, 0, 7);
-    }
+        { gen_middle_code(opr, 0, 7); }
     // | some_expression SYM_lss left_condition // TODO
     // | some_expression SYM_leq left_condition
     // | some_expression SYM_gtr left_condition
@@ -461,6 +401,7 @@ left_condition:
             }
         }
     }
+
     | SYM_number
     {
         int num = $1;
@@ -472,14 +413,101 @@ left_condition:
     }
     ;
 
-// init_expr:
-//     | some_ident SYM_becomes some_expression
-//     ;
+assignment_statement:
+    some_ident
+    {
+        int pos;
+        strcpy(ident, $1);
+        pos = get_ident_position_in_table(ident);
+        if(pos == 0)
+            error(0);
+        else {
+            if(table[pos].kind != variable){
+                error(12);
+                pos = 0;
+            }
+        }
+        $<number>$ = pos;
+    }
+    SYM_becomes expression
+    {
+        int pos;
+        if($<number>2 != 0) { // 其实就是 SYM_ident 后面那个大括号保留下来的 i， 因为此处无法访问上一个段落的 i, 所以要在上一段中用 $<number>$2 保存下来， $<number>$ 是指定 i 的类型为 数字
+            pos = $<number>2;
+            gen_middle_code(sto, level-table[pos].level, table[pos].adr);
+        }
+    }
+    ;
 
-// additive_expr:
-//     | some_ident SYM_addself
-//     | some_ident SYM_minusself
-//     ;
+init_expresstion:
+    | assignment_statement
+    ;
+
+additive_statement:
+    some_ident SYM_addself
+    {
+        int pos;
+        strcpy(ident, $1);
+        pos = get_ident_position_in_table(ident);
+        if(pos == 0)
+            error(0);
+        else if(table[pos].kind != variable) {
+            error(6);
+        }
+        else {
+            gen_middle_code(lit, 0, 1);
+            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
+            gen_middle_code(opr, 0, 2);
+            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
+        }
+    }
+    | SYM_addself some_ident
+    {
+        int pos;
+        strcpy(ident, $2);
+        pos = get_ident_position_in_table(ident);
+        if(pos == 0)
+            error(0);
+        else {
+            gen_middle_code(lit, 0, 1);
+            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
+            gen_middle_code(opr, 0, 2);
+            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
+        }
+    }
+    | some_ident SYM_minusself
+    {
+        int pos;
+        strcpy(ident, $1);
+        pos = get_ident_position_in_table(ident);
+        if(pos == 0)
+            error(0);
+        else {
+            gen_middle_code(lit, 0, -1);
+            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
+            gen_middle_code(opr, 0, 2);
+            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
+        }
+    }
+    | SYM_minusself some_ident
+    {
+        int pos;
+        strcpy(ident, $2);
+        pos = get_ident_position_in_table(ident);
+        if(pos == 0)
+            error(0);
+        else {
+            gen_middle_code(lit, 0, -1);
+            gen_middle_code(lod, level - table[pos].level, table[pos].adr);
+            gen_middle_code(opr, 0, 2);
+            gen_middle_code(sto, level - table[pos].level, table[pos].adr);
+        }
+    }
+    ;
+
+additive_expresstion:
+    | additive_statement
+    ;
 
 
 %%

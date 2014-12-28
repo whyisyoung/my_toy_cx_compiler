@@ -19,6 +19,7 @@
 "if"          { return SYM_if; }
 "else"        { return SYM_else; }
 "while"       { return SYM_while; }
+"for"         { return SYM_for; }
 "write"       { return SYM_write; }
 "read"        { return SYM_read; }
 "odd"         { return SYM_odd; }

@@ -1,0 +1,56 @@
+ test/prime_v2.cx
+
+ 1   jmp   0     2
+ 2   ini   0     6
+ 3   lit   0     2
+ 4   sto   0     3
+ 5   lit   0     2
+ 6   opr   0    14
+ 7   lod   0     3
+ 8   lit   0   100
+ 9   opr   0    10
+10   jpc   0    51
+11   lit   0     1
+12   lod   0     3
+13   opr   0     2
+14   sto   0     3
+15   lit   0     0
+16   sto   0     5
+17   lit   0     2
+18   sto   0     4
+19   lod   0     3
+20   lod   0     4
+21   lod   0     4
+22   opr   0     4
+23   opr   0    11
+24   jpc   0    43
+25   jmp   0    31
+26   lit   0     1
+27   lod   0     4
+28   opr   0     2
+29   sto   0     4
+30   jmp   0    19
+31   lit   0     0
+32   lod   0     3
+33   lod   0     4
+34   opr   0     6
+35   opr   0     8
+36   jpc   0    42
+37   lit   0     1
+38   sto   0     5
+39   lod   0     3
+40   sto   0     4
+41   jmp   0    42
+42   jmp   0    26
+43   lod   0     5
+44   lit   0     0
+45   opr   0     8
+46   jpc   0    50
+47   lod   0     3
+48   opr   0    14
+49   jmp   0    50
+50   jmp   0     7
+51   opr   0     0
+52   ini   0     3
+53   cal   0     2
+54   opr   0     0
