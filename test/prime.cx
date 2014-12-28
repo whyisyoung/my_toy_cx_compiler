@@ -21,7 +21,7 @@
                 j++;
             };
 
-            if(flag == 0) { // 此处暂时不能用 false, 因为 false 属于 another_expr, 不属于 some_expr
+            if(flag == 0) {
                 write(i);
             };
         };

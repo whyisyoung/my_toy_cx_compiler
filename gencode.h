@@ -172,7 +172,7 @@ void interpret()
                 t--;
                 s[t] = ((s[t] >= s[t + 1]) ? 1 : 0);
                 break;
-            case 12:
+            case 12: /* gtr */
                 t--;
                 s[t] = ((s[t] > s[t + 1]) ? 1 : 0);
                 break;

@@ -21,6 +21,7 @@
 "while"       { return SYM_while; }
 "write"       { return SYM_write; }
 "read"        { return SYM_read; }
+"odd"         { return SYM_odd; }
 
 "true"        { return SYM_true; }
 "false"       { return SYM_false; }

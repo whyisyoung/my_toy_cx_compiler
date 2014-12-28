@@ -1,6 +1,6 @@
 %{
     #include "gencode.h"
-    #define YYDEBUG 0
+    #define YYDEBUG 1
     #ifdef YYDEBUG
         #define TRACE printf("reduce at line %d\n", __LINE__);
     #else
@@ -18,7 +18,7 @@
 // %token SYM_main
 %token SYM_call, SYM_const
 // %token SYM_do
-%token SYM_function, SYM_read //, SYM_odd
+%token SYM_function, SYM_read, SYM_odd
 %token SYM_int, SYM_bool, SYM_while
 %token SYM_write //, SYM_ident, SYM_number
 %token SYM_if
@@ -163,7 +163,7 @@ statement:
     } SYM_semicolon
     | SYM_if SYM_lparen another_expression SYM_rparen
     {
-        $<number>$ = code_index; /// Warning: $<number>0 是什么？？？
+        $<number>$ = code_index;
         gen_middle_code(jpc, 0, 0); // 回填用 L1
     }
     statement
@@ -366,7 +366,7 @@ another_term:
     ;
 
 another_factor:
-    another_ident // Warning: 这个 ident 该如何处理？？
+    another_ident // 与 0 比较
     {
         int pos;
         strcpy(ident, $1);
@@ -379,6 +379,8 @@ another_factor:
                 gen_middle_code(lit, 0, table[pos].val); break;
             case variable:
                 gen_middle_code(lod, level - table[pos].level, table[pos].adr); break;
+                gen_middle_code(lit, 0, 0);
+                gen_middle_code(opr, 0, 12); // ident > 0
             case func:
                 error(4); break;
             }
@@ -425,18 +427,16 @@ condition:
     {
         gen_middle_code(opr, 0, 9);
     }
-    // | some_expression SYM_lss some_ident // TODO
-    // | some_expression SYM_leq some_ident
-    // | some_expression SYM_gtr some_ident
-    // | some_expression SYM_geq some_ident
-    // | some_expression SYM_eql some_ident
-    // | some_expression SYM_neq some_ident
-    // | some_expression SYM_lss SYM_number
-    // | some_expression SYM_leq SYM_number
-    // | some_expression SYM_gtr SYM_number
-    // | some_expression SYM_geq SYM_number
-    // | some_expression SYM_eql SYM_number
-    // | some_expression SYM_neq SYM_number
+    | SYM_odd some_expression
+    {
+        gen_middle_code(opr, 0, 7);
+    }
+    // | some_expression SYM_lss left_condition // TODO
+    // | some_expression SYM_leq left_condition
+    // | some_expression SYM_gtr left_condition
+    // | some_expression SYM_geq left_condition
+    // | some_expression SYM_eql left_condition
+    // | some_expression SYM_neq left_condition
     ;
 
 

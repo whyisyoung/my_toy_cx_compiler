@@ -4,7 +4,7 @@
 #include "stdlib.h"
 
 #define IDENT_TABLE_MAX 100 /* 标识符表长度 */
-#define IDENT_LEN 10     /* 每个标识符最大长度 */
+#define IDENT_LEN 20     /* 每个标识符最大长度 */
 #define LEV_MAX 10
 #define CONST_MAX 10000000  /* 常量最大值 */
 #define STACK_SIZE 500
