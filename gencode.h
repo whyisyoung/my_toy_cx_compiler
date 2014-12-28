@@ -185,14 +185,12 @@ void interpret()
                 fprintf(stack_data_file, "%d\n", s[t]);
                 t--;
                 break;
-            // case 15:
-            //     printf("\n");
-            //     fprintf(stack_data_file, "\n");
-            //     break;
+            case 15: // XOR
+                t--; s[t] = s[t] ^ s[t + 1]; break;
             case 16: /* read */
                 t++;
-                printf("?");
-                fprintf(stack_data_file, "?");
+                printf("input: ");
+                fprintf(stack_data_file, "input: ");
                 scanf("%d", &s[t]);
                 fprintf(stack_data_file, "%d", s[t]);
                 break;

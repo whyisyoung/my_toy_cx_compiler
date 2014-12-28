@@ -46,6 +46,7 @@
 "-"     { return SYM_minus; }
 "*"     { return SYM_times; }
 "/"     { return SYM_slash; }
+"^"     { return SYM_xor; }
 
 "<"     { return SYM_lss; }
 "<="    { return SYM_leq; }

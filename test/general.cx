@@ -43,6 +43,10 @@
         write c;
         --c;
         write c;
+
+        c = c ^ 0;
+        write c;
+
         read a;
     };
 

@@ -1,6 +1,6 @@
 %{
     #include "gencode.h"
-    #define YYDEBUG 1
+    #define YYDEBUG 0
     #ifdef YYDEBUG
         #define TRACE printf("reduce at line %d\n", __LINE__);
     #else
@@ -31,7 +31,7 @@
 %token SYM_becomes                          /* level 14 */
 %token SYM_or                               /* level 12 */
 %token SYM_and                              /* level 11 */
-// %token SYM_xor                              /* level 9 */
+%token SYM_xor                              /* level 9 */
 %token SYM_eql, SYM_neq                     /* level 7 */
 %token SYM_lss, SYM_leq, SYM_gtr, SYM_geq   /* level 6 */
 %token SYM_plus, SYM_minus                  /* level 4 */
@@ -312,6 +312,8 @@ some_term:
         { gen_middle_code(opr, 0, 5); }
     | some_factor SYM_mod some_factor
         { gen_middle_code(opr, 0, 6); }
+    | some_factor SYM_xor some_factor
+        { gen_middle_code(opr, 0, 15); }
     | some_factor
     ;
 
@@ -503,8 +505,8 @@ int main()
         exit(0);
     }
 
-    printf("Input file: \n");
-    fprintf(error_file, "Input file: \n");
+    printf("Input file (absolute path): \n");
+    fprintf(error_file, "Input file (absolute path): \n");
 
     scanf("%s", src_file_name);
     fprintf(error_file, "%s\n", src_file_name);

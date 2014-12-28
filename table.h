@@ -36,6 +36,19 @@ struct LEVEL_REGISTRATION {
     int init_cx; /* initial code index 保留本过程目标代码的起始位置 */
 } level_registration[4];
 
+
+int get_ident_position_in_table(char ident[IDENT_LEN])
+{
+    int i;
+    strcpy(table[0].name, ident); /* tx 表示的是当前标识符总个数，来了一个标识符后，先 tx+1, 再登入 table 表， 相当于 table[0] 为空 */
+    i = table_index;
+
+    while(strcmp(table[i].name, ident)!=0)
+        i--;
+    return i;
+}
+
+
 void enter_object_to_table(enum object obj)
 {
     int pos;
@@ -67,17 +80,5 @@ void enter_object_to_table(enum object obj)
     else {  /* ident redeclared */
         error(5);
     }
-}
-
-
-int get_ident_position_in_table(char ident[IDENT_LEN])
-{
-    int i;
-    strcpy(table[0].name, ident); /* tx 表示的是当前标识符总个数，来了一个标识符后，先 tx+1, 再登入 table 表， 相当于 table[0] 为空 */
-    i = table_index;
-
-    while(strcmp(table[i].name, ident)!=0)
-        i--;
-    return i;
 }
 
