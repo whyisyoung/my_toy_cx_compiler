@@ -28,53 +28,53 @@ extern int line;
 
 void error(int error_no)
 {
-    error_count++;
+    // error_count++; // in function yyerror error_count has added it self.
 
     switch(error_no) {
     case 0:
-        printf("character not defined.\n");
-        fprintf(error_file, "character not defined.\n");
+        printf("character not defined.");
+        fprintf(error_file, "character not defined.");
         break;
     case 1:
-        printf("function not declared. \n");
-        fprintf(error_file, "function not declared. \n");
+        printf("function not declared. ");
+        fprintf(error_file, "function not declared. ");
         break;
     case 2:
-        printf("function name has been used as a variable or constant. \n");
-        fprintf(error_file, "function name has been used as a variable or constant. \n");
+        printf("function name has been used as a variable or constant. ");
+        fprintf(error_file, "function name has been used as a variable or constant. ");
         break;
     case 3:
-        printf("variable or constant cannot be used as a function. \n");
-        fprintf(error_file, "variable or constant cannot be used as a function. \n");
+        printf("variable or constant cannot be used as a function. ");
+        fprintf(error_file, "variable or constant cannot be used as a function. ");
         break;
     case 4:
-        printf("function cannot be used in arithmetic or logic operations. \n");
-        fprintf(error_file, "function cannot be used in arithmetic or logic operations. \n");
+        printf("function cannot be used in arithmetic or logic operations. ");
+        fprintf(error_file, "function cannot be used in arithmetic or logic operations. ");
         break;
     case 5:
-        printf("the name of identfier have been declared before. \n");
-        fprintf(error_file, "the name of identfier have been declared before. \n");
+        printf("the name of identfier have been declared before. ");
+        fprintf(error_file, "the name of identfier have been declared before. ");
         break;
     case 6:
-        printf("Only variable can add or minus self.\n");
-        fprintf(error_file, "Only variable can add or minus self.\n");
+        printf("Only variable can add or minus self.");
+        fprintf(error_file, "Only variable can add or minus self.");
         break;
     case 7:
-        printf("\n");
-        fprintf(error_file, "\n");
+        printf("");
+        fprintf(error_file, "");
         break;
 
     case 31:
-        printf("number exceeds 10000000.\n");
-        fprintf(error_file, "number exceeds 10000000.\n");
+        printf("number exceeds 10000000.");
+        fprintf(error_file, "number exceeds 10000000.");
         break;
     case 32:
-        printf("stack overflow\n");
-        fprintf(error_file, "stack overflow.\n");
+        printf("stack overflow");
+        fprintf(error_file, "stack overflow.");
         break;
     default:
-        printf("error%d\n", error_no);
-        fprintf(error_file, "error%d\n", error_no);
+        printf("error%d", error_no);
+        fprintf(error_file, "error%d", error_no);
         break;
     }
     yyerror("");

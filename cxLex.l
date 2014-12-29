@@ -2,16 +2,23 @@
     #include "stdio.h"
     #include "string.h"
     #include "stdlib.h"
-    #include "cxyacc.tab.h"
+    #include "cxYacc.tab.h"
     int line = 1;
     void yyerror(char *);
     int yywrap(void);
 %}
 
+%x COMMENT
 
 /* 为什么不能把 const 一类以字母出现的规则放在 SYM_ident 和 SYM_number 之后？？？*/
 
 %%
+
+"/*" { BEGIN COMMENT; }
+<COMMENT>. |
+<COMMENT>\n ;
+<COMMENT>"*/" {BEGIN INITIAL; }
+
 [ \t]         ; /* skip whitespace */
 [\n]          { line++; }
 "int"         { return SYM_int; }
@@ -66,8 +73,6 @@
 ")"     { return SYM_rparen; }
 "{"     { return SYM_lbrace; }
 "}"     { return SYM_rbrace; }
-"/*"    { return SYM_lcomment; }
-"*/"    { return SYM_rcomment; }
 
 
 "%"     { return SYM_mod; } /* extended operators */

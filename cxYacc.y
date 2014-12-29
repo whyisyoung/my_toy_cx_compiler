@@ -40,7 +40,6 @@
 %token SYM_lparen, SYM_rparen, SYM_lbrace, SYM_rbrace  /* level 1 */
 %token SYM_semicolon
 
-%token SYM_lcomment, SYM_rcomment
 
 %token <ident> SYM_ident
 %token <number> SYM_number
@@ -64,7 +63,7 @@ program:
     ;
 
 block:
-    SYM_lbrace // Warning: block 的这些操作应该放到 function 里面去
+    SYM_lbrace
     {
         level++;
         data_allocation_index = 3;
@@ -204,7 +203,7 @@ statement:
 
     | SYM_write some_expression SYM_semicolon
     {
-        gen_middle_code(opr, 0, 14); // Warning: 此处的 write 是为了输出变量，实际上也就是输出栈顶内容
+        gen_middle_code(opr, 0, 14); // NOTE: 此处的 write 是为了输出变量，实际上也就是输出栈顶内容
     }
 
 
@@ -275,39 +274,7 @@ some_term:
     ;
 
 some_factor:
-    some_ident
-    {
-        int pos;
-        strcpy(ident, $1);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            switch(table[pos].kind) {
-            case constant:
-                gen_middle_code(lit, 0, table[pos].val);
-                break;
-            case variable:
-                gen_middle_code(lod, level-table[pos].level, table[pos].adr);
-                break;
-            case func:
-                error(4);
-                break;
-            }
-        }
-    }
-
-
-    | SYM_number
-    {
-        int num = $1;
-        if(num > CONST_MAX) {
-            error(31);
-            num = 0;
-        }
-        gen_middle_code(lit, 0, num);
-    }
-
+    left_condition
 
     | SYM_lparen some_expression SYM_rparen
     ;
@@ -325,30 +292,8 @@ another_term:
     ;
 
 another_factor:
-    another_ident // 与 0 比较
-    {
-        int pos;
-        strcpy(ident, $1);
-        pos = get_ident_position_in_table(ident);
-        if(pos == 0)
-            error(0);
-        else {
-            switch(table[pos].kind) {
-            case constant:
-                gen_middle_code(lit, 0, table[pos].val); break;
-            case variable:
-                gen_middle_code(lod, level - table[pos].level, table[pos].adr); break;
-                gen_middle_code(lit, 0, 0);
-                gen_middle_code(opr, 0, 12); // ident > 0
-            case func:
-                error(4); break;
-            }
-        }
-    }
-
-    | SYM_true
+    SYM_true
         { gen_middle_code(lit, 0, 1); }
-
     | SYM_false
         { gen_middle_code(lit, 0, 0); }
     | SYM_not another_factor
@@ -358,21 +303,33 @@ another_factor:
     | condition
     ;
 
+
 condition:
-    left_condition SYM_lss some_expression
-        { gen_middle_code(opr, 0, 10); }
-    | left_condition SYM_leq some_expression
-        { gen_middle_code(opr, 0, 13); }
-    | left_condition SYM_gtr some_expression
-        { gen_middle_code(opr, 0, 12); }
-    | left_condition SYM_geq some_expression
-        { gen_middle_code(opr, 0, 11); }
-    | left_condition SYM_eql some_expression
-        { gen_middle_code(opr, 0, 8); }
-    | left_condition SYM_neq some_expression
-        { gen_middle_code(opr, 0, 9); }
+    left_condition right_condition
+
     | SYM_odd some_expression
         { gen_middle_code(opr, 0, 7); }
+    ;
+
+right_condition:
+    // FIXED: 空代表可以写成 if(a) 的形式，这时候需要判断 a > 0 是否成立
+    {
+        gen_middle_code(lit, 0, 0);
+        gen_middle_code(opr, 0, 12);
+    }
+    | SYM_lss some_expression
+        { gen_middle_code(opr, 0, 10); }
+    | SYM_leq some_expression
+        { gen_middle_code(opr, 0, 13); }
+    | SYM_gtr some_expression
+        { gen_middle_code(opr, 0, 12); }
+    | SYM_geq some_expression
+        { gen_middle_code(opr, 0, 11); }
+    | SYM_eql some_expression
+        { gen_middle_code(opr, 0, 8); }
+    | SYM_neq some_expression
+        { gen_middle_code(opr, 0, 9); }
+
     // | some_expression SYM_lss left_condition // TODO
     // | some_expression SYM_leq left_condition
     // | some_expression SYM_gtr left_condition
@@ -412,6 +369,8 @@ left_condition:
         gen_middle_code(lit, 0, num);
     }
     ;
+
+
 
 assignment_statement:
     some_ident
@@ -546,14 +505,6 @@ int main()
 
     redirectInput(fin);
 
-    // printf("List object code?[y/n]");
-
-    // scanf("%s", src_file_name);
-    // fprintf(error_file,"\nList object code?\n");
-    // if(src_file_name[0]=='y')
-    //     listswitch=true;
-    // else
-    //     listswitch=false;
     error_count = 0;
     code_index = 0;
 
