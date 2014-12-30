@@ -523,6 +523,7 @@ exit_state:
     {
         gen_middle_code(jmp, 0, 0);
     }
+    ;
 
 
 %%
