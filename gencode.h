@@ -60,13 +60,24 @@ void error(int error_no)
         fprintf(error_file, "Only variable can add or minus self.");
         break;
     case 7:
-        printf("");
-        fprintf(error_file, "");
+        printf("multiply exceeds the range of int");
+        fprintf(error_file, "multiply exceeds the range of int");
         break;
-
+    case 8:
+        printf("divided by zero");
+        fprintf(error_file, "divided by zero");
+        break;
+    case 9:
+        printf("add operation exceeds the range of int");
+        fprintf(error_file, "add operation exceeds the range of int");
+        break;
+    case 10:
+        printf("\n");
+        fprintf(error_file, "\n");
+        break;
     case 31:
-        printf("number exceeds 10000000.");
-        fprintf(error_file, "number exceeds 10000000.");
+        printf("number exceeds 2147483647.");
+        fprintf(error_file, "number exceeds 2147483647.");
         break;
     case 32:
         printf("stack overflow");
@@ -150,13 +161,39 @@ void interpret()
             case 1:
                 s[t] = -s[t]; break;
             case 2:
-                t--; s[t] = s[t] + s[t + 1]; break;
+                t--;
+                if(s[t] > 0 && s[t] > 0 && s[t] + s[t + 1] < 0) {
+                    error(9); exit(-1);
+                } else if(s[t] < 0 && s[t] < 0 && s[t] + s[t + 1] > 0) {
+                    error(9); exit(-1);
+                } else {
+                    s[t] = s[t] + s[t + 1];
+                }
+                break;
             case 3:
                 t--; s[t] = s[t] - s[t + 1]; break;
             case 4:
-                t--; s[t] = s[t] * s[t + 1]; break;
+                t--;
+                // if(s[t] * s[t + 1] > 2147483647) { // Warning: HOW TO FIX RANGE_ERROR
+                //     error(7);
+                //     exit(-1);
+                // }
+                // else
+                if(s[t] > 0 && s[t + 1] > 0 && s[t] * s[t + 1] < 0) { // Still wrong, 13! should give error but didn't
+                    error(7); exit(-1);
+                } else if(s[t] < 0 && s[t + 1] < 0 && s[t] * s[t + 1] > 0) {
+                    error(7); exit(-1);
+                } else {
+                    s[t] = s[t] * s[t + 1];
+                }
+                break;
             case 5:
-                t--; s[t] = s[t] / s[t + 1]; break;
+                t--;
+                if(s[t + 1] == 0) {
+                    error(8); exit(-1);
+                } else
+                    s[t] = s[t] / s[t + 1];
+                break;
             case 6:
                 t--; s[t] = s[t] % s[t + 1]; break;
             case 7: /* ODD, 奇数为1，偶数为0 */
