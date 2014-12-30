@@ -160,7 +160,7 @@ statement:
     else_statement
     {
         code[$<number>7].adr = code_index; // L2
-    } SYM_semicolon
+    } // SYM_semicolon
 
 
     | SYM_while
@@ -176,7 +176,7 @@ statement:
     {
         gen_middle_code(jmp, 0, $<number>2); // 无条件跳转回 while 循环
         code[$<number>6].adr = code_index;
-    } SYM_semicolon
+    } // SYM_semicolon
 
 
     | SYM_for SYM_lparen init_expresstion  SYM_semicolon
@@ -198,7 +198,7 @@ statement:
     {
         gen_middle_code(jmp, 0, $<number>8 + 2); // jmp 0 L2 , 先跳转回去执行 i++， 也就是 L2
         code[$<number>8].adr = code_index; // jpc 0 L3 回填
-    } SYM_semicolon
+    } // SYM_semicolon
 
 
     | SYM_write some_expression SYM_semicolon
