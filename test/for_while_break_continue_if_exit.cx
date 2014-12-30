@@ -1,0 +1,63 @@
+/* PASSED
+
+{
+    int i;
+    i = 10;
+    while(i) {
+        write i;
+        if(i == 5)
+            break;;
+        i--;
+        if(i == 6)
+            continue;;
+        i = i - 2;
+    };
+}
+*/
+
+
+/* PASSED
+
+{
+    int i;
+    for(i = 0; i < 10; i++) {
+        if(i != 5) {
+            write i;
+        }
+        else {
+            break;
+        };
+    };
+}
+*/
+
+
+/* PASSED
+output: 10 7 6 3
+
+{
+    int i;
+    i = 10;
+    while(i) {
+        write i;
+        if(i == 5)
+            break;;
+        i--;
+
+        if(i == 8)
+            break;;
+    };
+}
+*/
+
+/* PASSED */
+{
+    int i;
+    for(i = 0; i < 10; i++) {
+        if(i == 1)
+            continue;
+        else
+            write i;;
+        exit;
+    };
+}

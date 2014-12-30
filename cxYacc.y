@@ -26,6 +26,9 @@
 %token SYM_for
 %token SYM_true
 %token SYM_false
+%token SYM_break
+%token SYM_continue
+%token SYM_exit
 
 /* operators */
 %token SYM_becomes                          /* level 14 */
@@ -58,7 +61,10 @@
 // rules secleciton
 
 program:
-    { level--; } // 在 block 里会恢复为 0
+    {
+        level--;  // 在 block 里会恢复为 0
+        break_adr = -1;
+    }
     block
     ;
 
@@ -166,6 +172,7 @@ statement:
     | SYM_while
     {
         $<number>$ = code_index;
+        continue_adr = code_index; // continue 跳转回此处即可
     }
     SYM_lparen another_expression SYM_rparen
     {
@@ -176,8 +183,20 @@ statement:
     {
         gen_middle_code(jmp, 0, $<number>2); // 无条件跳转回 while 循环
         code[$<number>6].adr = code_index;
+
+        if(break_adr != -1) { // 说明之前遇到了 break
+            code[break_adr].adr = code_index; // 更改 break 对应的 jmp 指令的 adr, 相当于跳出 while 循环
+            break_adr = -1; // 重新初始化为不可用状态
+        }
+        continue_adr = -1; // 重新初始化为不可用状态
     }  SYM_semicolon // Warning: REMOVE semicolon after check.
 
+
+    | break_state SYM_semicolon
+
+    | continue_state SYM_semicolon
+
+    | exit_state SYM_semicolon
 
     | SYM_for SYM_lparen init_expresstion  SYM_semicolon
     {
@@ -188,6 +207,7 @@ statement:
         $<number>$ = code_index;   // $<number>8
         gen_middle_code(jpc, 0, 0); // 用 statement 之后的地址回填
         gen_middle_code(jmp, 0, 0); // 条件成立先执行 statement(L4), 再执行 i++
+        continue_adr = code_index; // continue 执行到跳转到这里, 是 additive 之前不是之后！！
     }
     additive_expresstion
     {
@@ -198,6 +218,12 @@ statement:
     {
         gen_middle_code(jmp, 0, $<number>8 + 2); // jmp 0 L2 , 先跳转回去执行 i++， 也就是 L2
         code[$<number>8].adr = code_index; // jpc 0 L3 回填
+
+        if(break_adr != -1) { // 处理类似于 while
+            code[break_adr].adr = code_index;
+            break_adr = -1;
+        }
+        continue_adr = -1;
     }  SYM_semicolon // Warning: REMOVE semicolon after check.
 
 
@@ -468,6 +494,35 @@ additive_expresstion:
     | additive_statement
     | assignment_statement
     ;
+
+break_state:
+    SYM_break
+    {
+        //if(break_adr != -1) // NO NEED
+        //    code[break_adr].adr = code_index;
+        break_adr = code_index;
+        gen_middle_code(jmp, 0, 0);
+    }
+    ;
+
+continue_state:
+    SYM_continue
+    {
+        if(continue_adr != -1)
+            gen_middle_code(jmp, 0, continue_adr);
+        else {
+            // 出现了 continue 的时候值却仍然为 -1, 这是不可能的，
+            // 因为 continues 直到 while 或 for 结束才会初始化为 -1
+            error(10);
+        }
+    }
+    ;
+
+exit_state:
+    SYM_exit
+    {
+        gen_middle_code(jmp, 0, 0);
+    }
 
 
 %%

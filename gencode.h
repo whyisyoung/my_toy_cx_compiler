@@ -6,6 +6,8 @@
 int code_index;
 
 int error_count = 0;
+int break_adr = -1;
+int continue_adr = -1;
 
 enum func { lit, opr, lod, sto, cal, ini, jmp, jpc }; /* 指令名 */
 
@@ -72,6 +74,10 @@ void error(int error_no)
         fprintf(error_file, "add operation exceeds the range of int");
         break;
     case 10:
+        printf("continue should't used here");
+        fprintf(error_file, "continue should't used here");
+        break;
+    case 11:
         printf("\n");
         fprintf(error_file, "\n");
         break;
@@ -164,7 +170,7 @@ void interpret()
                 t--;
                 if(s[t] > 0 && s[t] > 0 && s[t] + s[t + 1] < 0) {
                     error(9); exit(-1);
-                } else if(s[t] < 0 && s[t] < 0 && s[t] + s[t + 1] > 0) {
+                } else if(s[t] < 0 && s[t + 1] < 0 && s[t] + s[t + 1] > 0) {
                     error(9); exit(-1);
                 } else {
                     s[t] = s[t] + s[t + 1];
