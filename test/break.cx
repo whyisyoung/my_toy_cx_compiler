@@ -1,0 +1,36 @@
+/*
+{
+    int i;
+    int j;
+    i = 1;
+    j = 3;
+    while(i <= 5) {
+        while(j) {
+            if(i == 3)
+                break;
+            else
+                write i;;
+            j--;
+        };
+        i++;
+        j = 3;
+    };
+
+}
+*/
+
+{
+    int a;
+    int b;
+    a = 2;
+    while(a < 5) {
+        write a;
+        if(a == 2) {
+            write 40;
+            a = a + 1;
+            write a;
+            continue;
+        };
+        a = a + 1;
+    };
+}

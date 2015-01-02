@@ -1,4 +1,6 @@
 {
+    int a;
+
     function factorial
     {
         int n;
@@ -24,4 +26,8 @@
     }
 
     call factorial;
+    a = 9;
+    a++;
+    write a;
+
 }

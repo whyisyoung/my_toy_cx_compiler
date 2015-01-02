@@ -53,7 +53,9 @@ void enter_object_to_table(enum object obj)
 {
     int pos;
     pos = get_ident_position_in_table(ident);
-    if(pos == 0) { /* new ident */
+    // DEPRECARED:
+    // 由于 function 里面允许定义局部变量，所以不能通过此方法判断变量名是否重复
+    // if(pos == 0) { /* new ident */
         table_index++;
         strcpy(table[table_index].name, ident); /* 将标识符填入 table 表 */
         table[table_index].kind = obj;
@@ -76,9 +78,9 @@ void enter_object_to_table(enum object obj)
             table[table_index].level = level;
             break;
         }
-    }
-    else {  /* ident redeclared */
-        error(5);
-    }
+    // }
+    //  else {   ident redeclared
+    //     error(5);
+    // }
 }
 

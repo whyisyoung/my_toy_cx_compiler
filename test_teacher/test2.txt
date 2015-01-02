@@ -1,0 +1,19 @@
+/*-3*/
+{
+	int aa;
+	int bb;
+	bool cc;
+	int dd;
+	aa=2;
+	bb=4;
+	cc=true;
+	if(true)
+	{
+		dd=(aa+bb)/bb-bb;
+		cc=false;
+	};
+	if(!cc && true)
+	{
+		write dd;
+	};
+}

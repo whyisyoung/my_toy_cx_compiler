@@ -549,7 +549,7 @@ int main()
         exit(0);
     }
 
-    printf("Input file (absolute path): \n");
+    printf("Input file (absolute or relative path): \n");
     fprintf(error_file, "Input file (absolute path): \n");
 
     scanf("%s", src_file_name);

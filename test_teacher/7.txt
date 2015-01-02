@@ -1,0 +1,7 @@
+{
+	int a;
+	a=2;
+	if(a!=2)
+		write a;
+	else write a;;
+}

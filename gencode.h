@@ -168,7 +168,7 @@ void interpret()
                 s[t] = -s[t]; break;
             case 2:
                 t--;
-                if(s[t] > 0 && s[t] > 0 && s[t] + s[t + 1] < 0) {
+                if(s[t] > 0 && s[t + 1] > 0 && s[t] + s[t + 1] < 0) {
                     error(9); exit(-1);
                 } else if(s[t] < 0 && s[t + 1] < 0 && s[t] + s[t + 1] > 0) {
                     error(9); exit(-1);
@@ -185,7 +185,7 @@ void interpret()
                 //     exit(-1);
                 // }
                 // else
-                if(s[t] > 0 && s[t + 1] > 0 && s[t] * s[t + 1] < 0) { // Still wrong, 13! should give error but didn't
+                if(s[t] > 0 && s[t + 1] > 0 && s[t] * s[t + 1] < 0) { // Warning: Still wrong, 13! should give error but didn't
                     error(7); exit(-1);
                 } else if(s[t] < 0 && s[t + 1] < 0 && s[t] * s[t + 1] > 0) {
                     error(7); exit(-1);
@@ -193,7 +193,7 @@ void interpret()
                     s[t] = s[t] * s[t + 1];
                 }
                 break;
-            case 5:
+            case 5: // divide
                 t--;
                 if(s[t + 1] == 0) {
                     error(8); exit(-1);

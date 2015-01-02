@@ -1,0 +1,26 @@
+{
+	int aa;
+	bool dd;
+	bool ee;
+	int bb;
+	int cc;
+	aa=6;
+	bb=8;
+	cc=10;
+	dd=false;
+	ee=true;
+	if(true)
+	{
+		int aa;
+		aa=2;
+		aa=(aa+cc)/(aa+bb)-aa*0;
+		write aa;
+		if(aa<cc&&bb==8||aa>0&&dd)
+		{
+			ee=true;
+			if(ee)
+				write aa+10;;
+		};
+	};
+	write aa;
+}

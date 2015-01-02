@@ -1,0 +1,26 @@
+/*
+	26
+*/
+
+{
+	int a;
+	bool b;
+	int c;
+	int d;
+	a=10;
+	d=8;
+	c=6;
+	b=true;
+	while(c>2)
+	{
+		while(d>4)
+		{
+			a=a+1;
+			d=d-1;
+		};
+		c=c-1;
+		d=8;
+	};
+	if(b)
+		write a;;
+}

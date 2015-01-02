@@ -1,0 +1,35 @@
+
+{
+	int a;
+	int b;
+	bool c;
+	bool e;
+	int aa;
+	a=5;
+	b=10;
+	c=true;
+	e=false;
+	aa=7;
+	if(((b<a)&&e)||c)
+	{
+		if(!e)
+		{
+			int aa;
+			aa=40;
+			while(a>1)
+			{
+				aa=aa+1;
+				a=a-1;
+				write aa;
+			};
+
+		}
+		else
+		{
+			aa=aa+1;
+		};
+		aa=17;
+		write aa+a;
+	};
+	write aa+a;
+}

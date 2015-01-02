@@ -1,0 +1,44 @@
+
+{
+    const int maxn = 100;
+
+    function prime
+    {
+        int i;
+        int j;
+        bool flag;
+        function print
+        {
+            int k;
+            k = 33333333;
+            i = 444444;
+            write k;
+            write i;
+        }
+
+
+        i = 2;
+        write 2;
+        while(i < maxn) {
+            i++;
+            flag = false;
+
+            for(j = 2; i >= j * j; j++) {
+                if(0 == i % j) {
+                    flag = true;
+                    j = i;
+                };
+            };
+
+            if(flag == 0) {
+                write(i);
+            };
+
+        };
+
+        call print;
+        write i;
+    }
+
+    call prime;
+}

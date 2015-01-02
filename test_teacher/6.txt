@@ -1,0 +1,8 @@
+{
+	int a;
+	int i;
+	a=2;
+	for(i=0;i<2;i++)
+		write a+i;
+    ;
+}

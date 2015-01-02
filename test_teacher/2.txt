@@ -1,0 +1,27 @@
+{
+	int a1;
+	int a2;
+	int a3;
+	bool b;
+	a1=1;
+	a2=2;
+	a3=5;
+	b=true;
+	if(b&&a3>a1)
+	{
+		while(a3>1)
+		{
+			write a3;
+			a3=a3-1;
+		};
+		if(a3>0)
+		{
+
+		};
+	}
+	else
+		a3=0;;
+
+write a3;
+}
+
